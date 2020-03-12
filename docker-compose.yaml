@@ -11,18 +11,31 @@ services:
       - "8600:8600/udp"
     command: "agent -server -bootstrap-expect 1 -ui -client 0.0.0.0"
 
-  consul-client:
-    image: consul:latest
-    command: "agent -retry-join consul-server-bootstrap -client 0.0.0.0"
+  # consul-client:
+  #   image: consul:latest
+  #   command: "agent -retry-join consul-server-bootstrap -client 0.0.0.0"
+  #   networks:
+  #     - app-networks
+
+  rabbit:
+    image: rabbit-consul-integrated
     networks:
       - app-networks
+    depends_on:
+      - consul-server
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+        - RABBITMQ_ERLANG_COOKIE='rabbitmq'
+    deploy:
+      replicas: 3
 
   spring-service:
     build:
       context: .
     depends_on:
-      - consul-server
-      - consul-client
+      - rabbit
     networks:
       - app-networks
     ports:
