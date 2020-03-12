@@ -2,6 +2,8 @@ version: '3.7'
 services:
   consul-server:
     image: consul:latest
+    networks:
+      - app-networks
     ports:
       - "8400:8400"
       - "8500:8500"
@@ -12,9 +14,20 @@ services:
   consul-client:
     image: consul:latest
     command: "agent -retry-join consul-server-bootstrap -client 0.0.0.0"
+    networks:
+      - app-networks
 
   spring-service:
     build:
       context: .
+    depends_on:
+      - consul-server
+      - consul-client
+    networks:
+      - app-networks
     ports:
       - "8888"
+
+networks:
+  app-networks:
+    driver: bridge
