@@ -11,12 +11,6 @@ services:
       - "8600:8600/udp"
     command: "agent -server -bootstrap-expect 1 -ui -client 0.0.0.0"
 
-  # consul-client:
-  #   image: consul:latest
-  #   command: "agent -retry-join consul-server-bootstrap -client 0.0.0.0"
-  #   networks:
-  #     - app-networks
-
   rabbit:
     image: rabbit-consul-integrated
     networks:

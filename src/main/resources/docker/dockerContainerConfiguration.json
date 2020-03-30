@@ -1,0 +1,5 @@
+{
+  "image": "mariadb:latest",
+  "label:": "mariaDbInstance",
+  "portSpecs": ""
+}
