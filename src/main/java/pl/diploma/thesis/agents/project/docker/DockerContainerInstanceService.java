@@ -10,4 +10,6 @@ public interface DockerContainerInstanceService {
 
     void saveAllDockerInstancesInfo(List<ContainerInfo> containerInfoList);
 
+    boolean updateAllDockerInstancesInfo();
+
 }

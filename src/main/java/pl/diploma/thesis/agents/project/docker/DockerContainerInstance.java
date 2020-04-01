@@ -7,8 +7,9 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@SuppressWarnings("JpaDataSourceORMInspection")
 @Entity
-@Table(name = "docker_instances")
+@Table(name = "DOCKER_INSTANCES")
 @Data
 @NoArgsConstructor()
 class DockerContainerInstance implements Serializable {

@@ -6,13 +6,11 @@ import com.spotify.docker.client.messages.Container;
 import com.spotify.docker.client.messages.ContainerInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import pl.diploma.thesis.agents.project.docker.exceptions.DockerInterruptedException;
 import pl.diploma.thesis.agents.project.docker.exceptions.UnexpectedDockerResponseException;
 
 import java.util.List;
 
-@Component
 @RequiredArgsConstructor
 @Slf4j
 class DockerApiImpl implements DockerApi {

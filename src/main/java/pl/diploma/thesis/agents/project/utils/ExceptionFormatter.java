@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
-class ExceptionFormatter {
+public class ExceptionFormatter {
 
     String formatStackTrace(Throwable throwable) {
         return Stream.of(throwable.getStackTrace())

@@ -1,4 +1,4 @@
-package pl.diploma.thesis.agent.project.agent.docker
+package pl.diploma.thesis.agents.project.docker
 
 import com.spotify.docker.client.DefaultDockerClient
 import com.spotify.docker.client.DockerClient
