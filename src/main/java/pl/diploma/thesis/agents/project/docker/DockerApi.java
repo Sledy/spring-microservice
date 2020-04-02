@@ -15,5 +15,7 @@ public interface DockerApi {
 
     void startContainer(String containerId);
 
+    void removeContainer(String containerId);
+
     ContainerInfo inspectContainer(String containerId);
 }

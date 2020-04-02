@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 @Component
 public class ExceptionFormatter {
 
-    String formatStackTrace(Throwable throwable) {
+    public String formatStackTrace(Throwable throwable) {
         return Stream.of(throwable.getStackTrace())
                 .map(StackTraceElement::toString)
                 .collect(Collectors.joining("\n"));

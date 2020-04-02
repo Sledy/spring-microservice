@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-class DockerContainerInstanceDto {
+public class DockerContainerInstanceDto {
 
     private Long id;
     private String containerId;

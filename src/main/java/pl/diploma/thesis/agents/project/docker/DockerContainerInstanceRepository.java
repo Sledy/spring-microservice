@@ -2,8 +2,10 @@ package pl.diploma.thesis.agents.project.docker;
 
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.Optional;
+
 interface DockerContainerInstanceRepository extends CrudRepository<DockerContainerInstance, Long> {
 
-    DockerContainerInstance findDockerContainerInstanceByContainerId(String containerId);
+    Optional<DockerContainerInstance> findDockerContainerInstanceByContainerId(String containerId);
 
 }

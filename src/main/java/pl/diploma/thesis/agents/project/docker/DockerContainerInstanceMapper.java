@@ -8,7 +8,7 @@ import org.mapstruct.factory.Mappers;
 
 @SuppressWarnings({"unused", "SpellCheckingInspection"})
 @Mapper
-interface DockerContainerInstanceMapper { //NOSONAR
+public interface DockerContainerInstanceMapper { //NOSONAR
 
     DockerContainerInstanceMapper INSTANCE = Mappers.getMapper(DockerContainerInstanceMapper.class);
 
@@ -18,8 +18,8 @@ interface DockerContainerInstanceMapper { //NOSONAR
     @InheritInverseConfiguration(name = "mapToDockerContainerInstance")
     DockerContainerInstanceDto mapToDockerContainerInstanceDto(DockerContainerInstance dockerContainerInstance);
 
-    default DockerContainerInstanceDto mapContainerInfoToDockerInstanceDto(ContainerInfo containerInfo){
-        if(containerInfo == null){
+    default DockerContainerInstanceDto mapContainerInfoToDockerInstanceDto(ContainerInfo containerInfo) {
+        if (containerInfo == null) {
             return null;
         }
         DockerContainerInstanceDto dto = new DockerContainerInstanceDto();

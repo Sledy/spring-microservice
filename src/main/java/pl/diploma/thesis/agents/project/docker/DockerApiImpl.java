@@ -20,7 +20,7 @@ class DockerApiImpl implements DockerApi {
     @Override
     public List<Container> listContainers() {
         try {
-            return dockerClient.listContainers();
+            return dockerClient.listContainers(DockerClient.ListContainersParam.allContainers());
         } catch (DockerException e) {
             throw new UnexpectedDockerResponseException(e);
         } catch (InterruptedException e) {
@@ -57,6 +57,18 @@ class DockerApiImpl implements DockerApi {
     public void startContainer(String containerId) {
         try {
             dockerClient.startContainer(containerId);
+        } catch (DockerException e) {
+            throw new UnexpectedDockerResponseException(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new DockerInterruptedException(e);
+        }
+    }
+
+    @Override
+    public void removeContainer(String containerId) {
+        try {
+            dockerClient.removeContainer(containerId);
         } catch (DockerException e) {
             throw new UnexpectedDockerResponseException(e);
         } catch (InterruptedException e) {

@@ -7,6 +7,7 @@ import com.spotify.docker.client.messages.ContainerConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import pl.diploma.thesis.agents.project.agent.events.EventPublisher;
 import pl.diploma.thesis.agents.project.utils.JsonConverter;
 
 @Configuration
@@ -28,9 +29,10 @@ class DockerConfiguration {
 
     @Bean
     DockerContainerInstanceService dockerContainerInstanceService(DockerApi dockerApi,
-                                                                  DockerContainerInstanceMapper dockerContainerInstanceMapper) {
+                                                                  DockerContainerInstanceMapper dockerContainerInstanceMapper,
+                                                                  EventPublisher eventPublisher) {
         return new DockerContainerInstanceServiceImpl(repository, jsonConverter, dockerApi,
-                dockerContainerInstanceMapper);
+                dockerContainerInstanceMapper, eventPublisher);
     }
 
     @Bean
