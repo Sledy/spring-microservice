@@ -6,16 +6,18 @@ public interface DockerContainerInstanceService {
 
     void saveDockerInstanceInfo(DockerContainerInstanceDto containerInstanceDto);
 
-    void saveAllDockerInstancesInfo(List<DockerContainerInstanceDto> containerInstanceDtoListList);
+    void updateAllDockerInstancesInfo();
 
-    boolean updateAllDockerInstancesInfo();
+    void removeContainer(DockerContainerInstanceDto dockerContainerInstanceDto);
 
-    boolean removeContainer(DockerContainerInstanceDto dockerContainerInstanceDto);
+    void purgeRemovedContainerFromDB(DockerContainerInstanceDto dockerContainerInstanceDto);
 
-    boolean purgeRemovedContainerFromDB(DockerContainerInstanceDto dockerContainerInstanceDto);
+    void deleteContainer(String containerId);
 
-    boolean deleteContainer(String containerId);
+    void stopContainer(DockerContainerInstanceDto dockerContainerInstanceDto);
 
-    boolean stopContainer(DockerContainerInstanceDto dockerContainerInstanceDto);
+    List<DockerContainerInstanceDto> listAllContainers();
+
+    void createDockerContainer(DockerContainerConfigDto dockerContainerConfigDto);
 
 }

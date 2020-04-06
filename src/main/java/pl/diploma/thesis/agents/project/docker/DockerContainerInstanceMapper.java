@@ -28,4 +28,15 @@ public interface DockerContainerInstanceMapper { //NOSONAR
         dto.setStatus(containerInfo.state().status());
         return dto;
     }
+
+    default DockerContainerInstance mapContainerInfoToDockerContainerInstance(ContainerInfo containerInfo){
+        if(containerInfo == null){
+            return null;
+        }
+        DockerContainerInstance dockerContainerInstance = new DockerContainerInstance();
+                dockerContainerInstance.setContainerId(containerInfo.id());
+        dockerContainerInstance.setImageName(containerInfo.image());
+        dockerContainerInstance.setStatus(containerInfo.state().status());
+        return dockerContainerInstance;
+    }
 }

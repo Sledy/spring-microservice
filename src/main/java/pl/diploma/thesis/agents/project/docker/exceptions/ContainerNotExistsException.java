@@ -1,5 +1,12 @@
 package pl.diploma.thesis.agents.project.docker.exceptions;
 
-//TODO: Finish excpetion. Maybe some abstraction?
-public class ContainerNotExistsException extends RuntimeException {
+public class ContainerNotExistsException extends BaseDockerException {
+
+    public ContainerNotExistsException(String msg) {
+        super(msg);
+    }
+
+    public ContainerNotExistsException(Throwable cause) {
+        super(cause);
+    }
 }

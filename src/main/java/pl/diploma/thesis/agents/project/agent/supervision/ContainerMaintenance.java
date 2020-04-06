@@ -38,7 +38,7 @@ public class ContainerMaintenance {
                     .state()
                     .status());
             if (stateEnum == ContainerStateEnum.EXITED) {
-                dockerApi.removeContainer(dockerContainerInstanceDto.getContainerId());
+                dockerContainerInstanceService.removeContainer(dockerContainerInstanceDto);
                 dockerContainerInstanceService.purgeRemovedContainerFromDB(dockerContainerInstanceDto);
                 return;
             }

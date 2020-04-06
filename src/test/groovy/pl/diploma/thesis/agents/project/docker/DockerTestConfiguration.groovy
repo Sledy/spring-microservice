@@ -5,12 +5,16 @@ import com.spotify.docker.client.DefaultDockerClient
 import com.spotify.docker.client.DockerClient
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Import
+import pl.diploma.thesis.agents.project.agent.events.EventPublisher
+import pl.diploma.thesis.agents.project.agent.events.EventTestConfiguration
 import pl.diploma.thesis.agents.project.utils.ExceptionFormatter
 import pl.diploma.thesis.agents.project.utils.JsonConverter
 import spock.mock.DetachedMockFactory
 
 
 @TestConfiguration
+@Import(EventTestConfiguration)
 class DockerTestConfiguration {
 
     private DockerContainerInstanceMapper testDockerContainerInstanceMapper = DockerContainerInstanceMapper.INSTANCE
@@ -18,10 +22,11 @@ class DockerTestConfiguration {
 
     @Bean
     DockerContainerInstanceService testDockerContainerInstanceService(DockerContainerInstanceRepository testDockerContainerRepository,
-                                                                      JsonConverter<DockerContainerInstance> testJsonConverter,
-                                                                      DockerApi testDockerApi) {
+                                                                      JsonConverter testJsonConverter,
+                                                                      DockerApi testDockerApi,
+                                                                      EventPublisher testEventPublisher) {
         return new DockerContainerInstanceServiceImpl(testDockerContainerRepository,
-                testJsonConverter, testDockerApi, testDockerContainerInstanceMapper)
+                testJsonConverter, testDockerApi, testDockerContainerInstanceMapper, testEventPublisher)
     }
 
     @Bean
@@ -35,12 +40,12 @@ class DockerTestConfiguration {
     }
 
     @Bean
-    JsonConverter<DockerContainerInstance> testJsonConverter() {
-        return new JsonConverter<DockerContainerInstance>(new ObjectMapper(), new ExceptionFormatter())
+    JsonConverter testJsonConverter() {
+        return new JsonConverter(new ObjectMapper(), new ExceptionFormatter())
     }
 
     @Bean
-    DockerContainerInstanceRepository testDockerContainerRepository(){
+    DockerContainerInstanceRepository testDockerContainerRepository() {
         return detachedMockFactory.Mock(DockerContainerInstanceRepository)
     }
 

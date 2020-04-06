@@ -1,5 +1,6 @@
 {
   "image": "mariadb:latest",
-  "label:": "mariaDbInstance",
-  "portSpecs": ""
+  "exposedPortsList": ["3306:3306"],
+  "commandList": [],
+  "envList": ["MYSQL_ROOT_PASSWORD=my-secret-pw"]
 }

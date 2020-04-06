@@ -8,7 +8,7 @@ import spock.lang.Specification
 import java.time.LocalDateTime
 
 @SpringBootTest(classes = DockerContainerInstanceService)
-@Import(DockerTestConfiguration)
+@Import([DockerTestConfiguration])
 class DockerContainerInstanceServiceTest extends Specification{
 
     @Autowired
@@ -20,9 +20,9 @@ class DockerContainerInstanceServiceTest extends Specification{
         given:
         testDockerContainerRepository.findDockerContainerInstanceByContainerId(_ as String) >> getDockerContainerInstance()
         when:
-        def result = dockerContainerInstanceService.updateAllDockerInstancesInfo()
-        then:
-        result
+        dockerContainerInstanceService.updateAllDockerInstancesInfo()
+        then: 'No exception must be thrown'
+        noExceptionThrown()
     }
 
     def private static getDockerContainerInstance(){
@@ -31,7 +31,7 @@ class DockerContainerInstanceServiceTest extends Specification{
         dockerContainerInstance.setImageName("imageName")
         dockerContainerInstance.setLastStatusUpdate(LocalDateTime.now())
         dockerContainerInstance.setStatus("running")
-        return dockerContainerInstance
+        return Optional.of(dockerContainerInstance)
     }
 
 }

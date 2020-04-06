@@ -1,19 +1,47 @@
 package pl.diploma.thesis.agents.project.docker
 
-import com.spotify.docker.client.DefaultDockerClient
-import com.spotify.docker.client.DockerClient
-import com.spotify.docker.client.messages.Version
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
+import pl.diploma.thesis.agents.project.utils.JsonConverter
 import spock.lang.Specification
 
-class DockerApiTest extends Specification{
+@SpringBootTest(classes = [DockerApiImpl])
+@Import([DockerTestConfiguration])
+class DockerApiTest extends Specification {
 
-    def "shit"(){
+    @Autowired
+    private DockerApi testDockerApi
+    @Autowired
+    private JsonConverter testJsonConverter
+
+    def "should return ContainerConfig"() {
         given:
-        DockerClient client = DefaultDockerClient.fromEnv().build()
+        String filePath = "/home/adam/IdeaProjects/agent-compute/src/test/resources/docker/dockerContainerConfiguration.json"
+        String json = new File(filePath).text
+        and:
+        def dto = testJsonConverter.convertToObject(json, DockerContainerConfigDto).get()
         when:
-        Version version = client.version()
+        def config = testDockerApi.buildContainerConfig(dto as DockerContainerConfigDto)
         then:
-        version != null
+        with(config){
+            it.image() == dto.image
+            it.env().intersect(dto.envList)
+            it.exposedPorts().intersect(dto.exposedPortsList)
+            it.cmd().intersect(dto.commandList)
+        }
+    }
+
+
+    def "should read from json"(){
+        given:
+        String filePath = "/home/adam/IdeaProjects/agent-compute/src/test/resources/docker/dockerContainerConfiguration.json"
+        when:
+        String json = new File(filePath).text
+        def dockerContainerConfigDto = testJsonConverter.convertToObject(json, DockerContainerConfigDto)
+        then:
+        dockerContainerConfigDto != null
     }
 
 

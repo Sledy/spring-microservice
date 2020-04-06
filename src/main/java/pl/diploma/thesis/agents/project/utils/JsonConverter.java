@@ -21,6 +21,7 @@ public class JsonConverter<T> {
             return objectMapper.writeValueAsString(input);
         } catch (JsonProcessingException e) {
             log.error("Cannot convert object to JSON: " + input.toString());
+            log.error(e.getMessage());
             log.error(exceptionFormatter.formatStackTrace(e));
             return "";
         }
@@ -31,6 +32,7 @@ public class JsonConverter<T> {
             return Optional.of(objectMapper.readValue(input, targetClass));
         } catch (JsonProcessingException e) {
             log.error("Cannot deserialize JSON: " + input);
+            log.error(e.getMessage());
             log.error(exceptionFormatter.formatStackTrace(e));
             return Optional.empty();
         }

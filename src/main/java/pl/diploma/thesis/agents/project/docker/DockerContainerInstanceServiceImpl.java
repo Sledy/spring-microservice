@@ -1,5 +1,6 @@
 package pl.diploma.thesis.agents.project.docker;
 
+import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,8 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -35,61 +38,67 @@ class DockerContainerInstanceServiceImpl implements DockerContainerInstanceServi
     }
 
     @Override
-    public void saveAllDockerInstancesInfo(List<DockerContainerInstanceDto> containerInstanceDtoListList) {
-        containerInstanceDtoListList.forEach(this::saveDockerInstanceInfo);
-    }
-
-    @Override
-    public boolean updateAllDockerInstancesInfo() {
+    public void updateAllDockerInstancesInfo() {
         dockerApi.listContainers()
                 .stream()
                 .map(container -> dockerApi.inspectContainer(container.id()))
-                .map(this::mapContainerInfoToDockerInstanceAndSetIdAndTime)
+                .map(this::createOrGetContainer)
                 .forEach(repository::save);
         log.debug("Containers status updated");
-        return true;
     }
 
     @Override
-    public boolean removeContainer(DockerContainerInstanceDto dockerContainerInstanceDto) {
+    public void removeContainer(DockerContainerInstanceDto dockerContainerInstanceDto) {
         dockerApi.removeContainer(dockerContainerInstanceDto.getContainerId());
         log.debug("Removing container with id: " + dockerContainerInstanceDto.getContainerId());
-        return true;
     }
 
     @Override
-    public boolean purgeRemovedContainerFromDB(DockerContainerInstanceDto dockerContainerInstanceDto) {
-        repository.delete(dockerContainerInstanceMapper.mapToDockerContainerInstance(dockerContainerInstanceDto));
+    public void purgeRemovedContainerFromDB(DockerContainerInstanceDto dockerContainerInstanceDto) {
+        DockerContainerInstance container =
+                dockerContainerInstanceMapper.mapToDockerContainerInstance(dockerContainerInstanceDto);
+        repository.delete(container);
         log.debug("DB record deleted for container id: " + dockerContainerInstanceDto.getContainerId());
-        return true;
     }
 
     @Override
-    public boolean deleteContainer(String containerId) {
+    public void deleteContainer(String containerId) {
         Optional<DockerContainerInstance> instance = repository.findDockerContainerInstanceByContainerId(containerId);
-        if(instance.isEmpty()){
-            throw new ContainerNotExistsException();
+        if (instance.isEmpty()) {
+            throw new ContainerNotExistsException(String.format("Container does not exists, id: %s", containerId));
         }
         DockerContainerInstanceDto dto = dockerContainerInstanceMapper.mapToDockerContainerInstanceDto(instance.get());
         stopContainer(dto);
         eventPublisher.publishContainerRemovalEvent(dto);
-        return false;
     }
 
     @Override
-    public boolean stopContainer(DockerContainerInstanceDto dockerContainerInstanceDto) {
+    public void stopContainer(DockerContainerInstanceDto dockerContainerInstanceDto) {
         dockerApi.stopContainer(dockerContainerInstanceDto.getContainerId(), 10);
         log.debug("Stopping container with id: " + dockerContainerInstanceDto.getContainerId());
-        return true;
+    }
+
+    @Override
+    public List<DockerContainerInstanceDto> listAllContainers() {
+        return StreamSupport.stream(repository.findAll().spliterator(), false)
+                .map(dockerContainerInstanceMapper::mapToDockerContainerInstanceDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void createDockerContainer(DockerContainerConfigDto dockerContainerConfigDto) {
+        ContainerConfig config = dockerApi.buildContainerConfig(dockerContainerConfigDto);
+        dockerApi.createContainer(config, "dupa");
+
+
     }
 
 
-    private DockerContainerInstance mapContainerInfoToDockerInstanceAndSetIdAndTime(ContainerInfo containerInfo) {
-        Optional<DockerContainerInstance> optional = repository.findDockerContainerInstanceByContainerId(containerInfo.id());
-        if(optional.isEmpty()){
-            throw new ContainerNotExistsException();
-        }
-        DockerContainerInstance entity = optional.get();
+    private DockerContainerInstance createOrGetContainer(ContainerInfo containerInfo) {
+        Optional<DockerContainerInstance> optional =
+                repository.findDockerContainerInstanceByContainerId(containerInfo.id());
+        DockerContainerInstance entity = optional
+                .orElseGet(() -> dockerContainerInstanceMapper.mapContainerInfoToDockerContainerInstance(containerInfo));
         entity.setLastStatusUpdate(LocalDateTime.now());
         return entity;
     }
