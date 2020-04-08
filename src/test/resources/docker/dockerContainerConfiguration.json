@@ -2,5 +2,6 @@
   "image": "mariadb:latest",
   "exposedPortsList": ["port:port"],
   "commandList": ["command"],
-  "envList": ["env"]
+  "envList": ["env"],
+  "containerName": "containerName"
 }

@@ -2,5 +2,7 @@
   "image": "mariadb:latest",
   "exposedPortsList": ["3306:3306"],
   "commandList": [],
-  "envList": ["MYSQL_ROOT_PASSWORD=my-secret-pw"]
+  "envList": ["MYSQL_ROOT_PASSWORD=my-secret-pw"],
+  "containerName": "containerName"
+
 }

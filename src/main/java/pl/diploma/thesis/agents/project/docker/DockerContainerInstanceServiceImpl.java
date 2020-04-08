@@ -1,6 +1,7 @@
 package pl.diploma.thesis.agents.project.docker;
 
 import com.spotify.docker.client.messages.ContainerConfig;
+import com.spotify.docker.client.messages.ContainerCreation;
 import com.spotify.docker.client.messages.ContainerInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -86,13 +87,44 @@ class DockerContainerInstanceServiceImpl implements DockerContainerInstanceServi
     }
 
     @Override
-    public void createDockerContainer(DockerContainerConfigDto dockerContainerConfigDto) {
+    public String createDockerContainer(DockerContainerConfigDto dockerContainerConfigDto) {
         ContainerConfig config = dockerApi.buildContainerConfig(dockerContainerConfigDto);
-        dockerApi.createContainer(config, "dupa");
-
-
+        ContainerCreation container = dockerApi.createContainer(config);
+        log.info("Container with {} created", container.id());
+        return container.id();
     }
 
+    @Override
+    public DockerContainerInstanceDto persistContainerDetailsInDb(String containerId) {
+        Optional<DockerContainerInstance> instanceOptional =
+                repository.findDockerContainerInstanceByContainerId(containerId);
+
+        DockerContainerInstance entity = instanceOptional.orElseGet(() -> dockerContainerInstanceMapper
+                .mapContainerInfoToDockerContainerInstance(dockerApi.inspectContainer(containerId)));
+
+        entity.setLastStatusUpdate(LocalDateTime.now());
+        return dockerContainerInstanceMapper.mapToDockerContainerInstanceDto(repository.save(entity));
+    }
+
+    @Override
+    public void startContainer(DockerContainerInstanceDto dockerContainerInstanceDto) {
+        dockerApi.startContainer(dockerContainerInstanceDto.getContainerId());
+    }
+
+    @Override
+    public ContainerStateEnum getContainerState(DockerContainerInstanceDto dockerContainerInstanceDto) {
+        String status = dockerApi.inspectContainer(dockerContainerInstanceDto.getContainerId()).state().status();
+        return ContainerStateEnum.fromValue(status);
+    }
+
+    @Override
+    public Long registerContainerInDb(DockerContainerConfigDto dockerContainerConfigDto) {
+        DockerContainerInstance dockerContainerInstance = new DockerContainerInstance();
+        dockerContainerInstance.setImageName(dockerContainerConfigDto.getImage());
+        dockerContainerInstance.setContainerName(dockerContainerConfigDto.getContainerName());
+        dockerContainerInstance.setLastStatusUpdate(LocalDateTime.now());
+        return repository.save(dockerContainerInstance).getId();
+    }
 
     private DockerContainerInstance createOrGetContainer(ContainerInfo containerInfo) {
         Optional<DockerContainerInstance> optional =

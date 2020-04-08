@@ -23,6 +23,6 @@ public interface DockerApi {
 
     ContainerConfig buildContainerConfig(DockerContainerConfigDto dockerContainerConfigDto);
 
-    ContainerCreation createContainer(ContainerConfig containerConfig, String containerName);
+    ContainerCreation createContainer(ContainerConfig containerConfig);
 
 }

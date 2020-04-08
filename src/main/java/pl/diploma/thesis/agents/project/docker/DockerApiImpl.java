@@ -103,11 +103,11 @@ class DockerApiImpl implements DockerApi {
     }
 
     @Override
-    public ContainerCreation createContainer(ContainerConfig containerConfig, String containerName) {
+    public ContainerCreation createContainer(ContainerConfig containerConfig) {
         try {
-            return dockerClient.createContainer(containerConfig, containerName);
+            return dockerClient.createContainer(containerConfig);
         } catch (DockerException e) {
-            String msg = String.format("Cannot create container: %s", containerName);
+            String msg = "Cannot create container";
             throw new ContainerCreationException(msg, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

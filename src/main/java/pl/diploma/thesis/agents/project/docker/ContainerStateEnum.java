@@ -12,6 +12,7 @@ public enum ContainerStateEnum {
     PAUSED("paused"),
     EXITED("exited"),
     DEAD("dead"),
+    CREATING("creating"),
     UNKNOWN("unknown");
 
 

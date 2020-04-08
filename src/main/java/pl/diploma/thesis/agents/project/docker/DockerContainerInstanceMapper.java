@@ -24,6 +24,7 @@ public interface DockerContainerInstanceMapper { //NOSONAR
         }
         DockerContainerInstanceDto dto = new DockerContainerInstanceDto();
         dto.setContainerId(containerInfo.id());
+        dto.setContainerName(containerInfo.name());
         dto.setImageName(containerInfo.image());
         dto.setStatus(containerInfo.state().status());
         return dto;

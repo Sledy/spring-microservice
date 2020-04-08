@@ -9,6 +9,7 @@ public class DockerContainerInstanceDto {
 
     private Long id;
     private String containerId;
+    private String containerName;
     private String imageName;
     private String status;
     private LocalDateTime lastStatusUpdate;

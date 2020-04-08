@@ -11,6 +11,8 @@ import java.util.Set;
 @Data
 public class DockerContainerConfigDto {
 
+    @JsonProperty("containerName")
+    String containerName;
     @JsonProperty("image")
     String image;
     @JsonProperty("commandList")

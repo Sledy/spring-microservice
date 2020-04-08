@@ -17,6 +17,7 @@ class DockerContainerInstance implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    private String containerName;
     private String containerId;
     private String imageName;
     private String status;

@@ -18,6 +18,14 @@ public interface DockerContainerInstanceService {
 
     List<DockerContainerInstanceDto> listAllContainers();
 
-    void createDockerContainer(DockerContainerConfigDto dockerContainerConfigDto);
+    String createDockerContainer(DockerContainerConfigDto dockerContainerConfigDto);
+
+    Long registerContainerInDb(DockerContainerConfigDto dockerContainerConfigDto);
+
+    DockerContainerInstanceDto persistContainerDetailsInDb(String containerId);
+
+    void startContainer(DockerContainerInstanceDto dockerContainerInstanceDto);
+
+    ContainerStateEnum getContainerState(DockerContainerInstanceDto dockerContainerInstanceDto);
 
 }

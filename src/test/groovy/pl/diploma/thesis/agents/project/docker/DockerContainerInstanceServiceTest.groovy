@@ -31,6 +31,7 @@ class DockerContainerInstanceServiceTest extends Specification{
         dockerContainerInstance.setImageName("imageName")
         dockerContainerInstance.setLastStatusUpdate(LocalDateTime.now())
         dockerContainerInstance.setStatus("running")
+        dockerContainerInstance.setContainerName("name")
         return Optional.of(dockerContainerInstance)
     }
 

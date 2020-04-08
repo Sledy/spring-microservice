@@ -1,7 +1,9 @@
 package pl.diploma.thesis.agents.project.agent.provisioning.mysql;
 
-interface ProvisioningAgentService {
+import pl.diploma.thesis.agents.project.docker.DockerContainerConfigDto;
 
-    boolean provisionMySQLDatabase();
+public interface ProvisioningAgentService {
+
+    void provisionMySqlDatabase(DockerContainerConfigDto dockerContainerConfigDto);
 
 }
