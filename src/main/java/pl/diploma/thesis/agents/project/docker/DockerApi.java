@@ -1,9 +1,6 @@
 package pl.diploma.thesis.agents.project.docker;
 
-import com.spotify.docker.client.messages.Container;
-import com.spotify.docker.client.messages.ContainerConfig;
-import com.spotify.docker.client.messages.ContainerCreation;
-import com.spotify.docker.client.messages.ContainerInfo;
+import com.spotify.docker.client.messages.*;
 
 import java.util.List;
 
@@ -24,5 +21,7 @@ public interface DockerApi {
     ContainerConfig buildContainerConfig(DockerContainerConfigDto dockerContainerConfigDto);
 
     ContainerCreation createContainer(ContainerConfig containerConfig);
+
+    TopResults listContainerProcesses(DockerContainerInstanceDto dockerContainerInstanceDto);
 
 }

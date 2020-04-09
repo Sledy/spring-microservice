@@ -2,10 +2,7 @@ package pl.diploma.thesis.agents.project.docker;
 
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.messages.Container;
-import com.spotify.docker.client.messages.ContainerConfig;
-import com.spotify.docker.client.messages.ContainerCreation;
-import com.spotify.docker.client.messages.ContainerInfo;
+import com.spotify.docker.client.messages.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import pl.diploma.thesis.agents.project.docker.exceptions.ContainerCreationException;
@@ -108,6 +105,19 @@ class DockerApiImpl implements DockerApi {
             return dockerClient.createContainer(containerConfig);
         } catch (DockerException e) {
             String msg = "Cannot create container";
+            throw new ContainerCreationException(msg, e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new DockerInterruptedException(e);
+        }
+    }
+
+    @Override
+    public TopResults listContainerProcesses(DockerContainerInstanceDto dockerContainerInstanceDto) {
+        try {
+            return dockerClient.topContainer(dockerContainerInstanceDto.getContainerId(), "-aux");
+        } catch (DockerException e) {
+            String msg = "Error during container processes check";
             throw new ContainerCreationException(msg, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

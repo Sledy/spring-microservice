@@ -28,4 +28,6 @@ public interface DockerContainerInstanceService {
 
     ContainerStateEnum getContainerState(DockerContainerInstanceDto dockerContainerInstanceDto);
 
+    List<String> getContainerProcessesList(DockerContainerInstanceDto dockerContainerInstanceDto);
+
 }

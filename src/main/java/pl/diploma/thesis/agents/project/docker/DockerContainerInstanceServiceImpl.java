@@ -41,10 +41,10 @@ class DockerContainerInstanceServiceImpl implements DockerContainerInstanceServi
     @Override
     public void updateAllDockerInstancesInfo() {
         dockerApi.listContainers()
-                .stream()
-                .map(container -> dockerApi.inspectContainer(container.id()))
-                .map(this::createOrGetContainer)
-                .forEach(repository::save);
+                 .stream()
+                 .map(container -> dockerApi.inspectContainer(container.id()))
+                 .map(this::createOrGetContainer)
+                 .forEach(repository::save);
         log.debug("Containers status updated");
     }
 
@@ -81,9 +81,10 @@ class DockerContainerInstanceServiceImpl implements DockerContainerInstanceServi
 
     @Override
     public List<DockerContainerInstanceDto> listAllContainers() {
-        return StreamSupport.stream(repository.findAll().spliterator(), false)
-                .map(dockerContainerInstanceMapper::mapToDockerContainerInstanceDto)
-                .collect(Collectors.toList());
+        return StreamSupport.stream(repository.findAll()
+                                              .spliterator(), false)
+                            .map(dockerContainerInstanceMapper::mapToDockerContainerInstanceDto)
+                            .collect(Collectors.toList());
     }
 
     @Override
@@ -113,8 +114,19 @@ class DockerContainerInstanceServiceImpl implements DockerContainerInstanceServi
 
     @Override
     public ContainerStateEnum getContainerState(DockerContainerInstanceDto dockerContainerInstanceDto) {
-        String status = dockerApi.inspectContainer(dockerContainerInstanceDto.getContainerId()).state().status();
+        String status = dockerApi.inspectContainer(dockerContainerInstanceDto.getContainerId())
+                                 .state()
+                                 .status();
         return ContainerStateEnum.fromValue(status);
+    }
+
+    @Override
+    public List<String> getContainerProcessesList(DockerContainerInstanceDto dockerContainerInstanceDto) {
+        return dockerApi.listContainerProcesses(dockerContainerInstanceDto)
+                        .processes()
+                        .stream()
+                        .map(process -> process.get(process.size() - 1))
+                        .collect(Collectors.toList());
     }
 
     @Override
@@ -123,14 +135,17 @@ class DockerContainerInstanceServiceImpl implements DockerContainerInstanceServi
         dockerContainerInstance.setImageName(dockerContainerConfigDto.getImage());
         dockerContainerInstance.setContainerName(dockerContainerConfigDto.getContainerName());
         dockerContainerInstance.setLastStatusUpdate(LocalDateTime.now());
-        return repository.save(dockerContainerInstance).getId();
+        return repository.save(dockerContainerInstance)
+                         .getId();
     }
+
 
     private DockerContainerInstance createOrGetContainer(ContainerInfo containerInfo) {
         Optional<DockerContainerInstance> optional =
                 repository.findDockerContainerInstanceByContainerId(containerInfo.id());
         DockerContainerInstance entity = optional
-                .orElseGet(() -> dockerContainerInstanceMapper.mapContainerInfoToDockerContainerInstance(containerInfo));
+                .orElseGet(() -> dockerContainerInstanceMapper
+                        .mapContainerInfoToDockerContainerInstance(containerInfo));
         entity.setLastStatusUpdate(LocalDateTime.now());
         return entity;
     }

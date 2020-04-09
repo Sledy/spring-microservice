@@ -7,12 +7,14 @@ import pl.diploma.thesis.agents.project.docker.ContainerStateEnum;
 import pl.diploma.thesis.agents.project.docker.DockerContainerConfigDto;
 import pl.diploma.thesis.agents.project.docker.DockerContainerInstanceDto;
 import pl.diploma.thesis.agents.project.docker.DockerContainerInstanceService;
+import pl.diploma.thesis.agents.project.mysql.MySqlService;
 import pl.diploma.thesis.agents.project.utils.ExceptionFormatter;
 
 @Slf4j
 @RequiredArgsConstructor
 class ProvisioningAgentServiceImpl implements ProvisioningAgentService {
 
+    private final MySqlService mySqlService;
     private final DockerContainerInstanceService dockerContainerInstanceService;
     private final ExceptionFormatter exceptionFormatter;
     private final int provisioningSecondsTimeout;
@@ -33,6 +35,12 @@ class ProvisioningAgentServiceImpl implements ProvisioningAgentService {
         log.info("Container started. Waiting to be ready");
         waitForContainerToBeRunning(dockerContainerInstanceDto, provisioningSecondsTimeout);
         log.info("Container is running. Checking database health");
+
+        if(mySqlService.mySqlDaemonIsRunning(dockerContainerInstanceDto)){
+         //TODO: Start failover
+        }
+
+        log.info("Database is ready. Provisioning completed!");
 
 
     }

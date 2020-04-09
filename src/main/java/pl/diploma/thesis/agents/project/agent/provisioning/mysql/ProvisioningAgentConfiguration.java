@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 import pl.diploma.thesis.agents.project.docker.DockerContainerInstanceService;
+import pl.diploma.thesis.agents.project.mysql.MySqlService;
 import pl.diploma.thesis.agents.project.utils.ExceptionFormatter;
 
 @Configuration
@@ -15,11 +16,12 @@ class ProvisioningAgentConfiguration {
 
     @Value("${database.provisioning.seconds.timeout}")
     private int provisioningSecondsTimeout;
+    private final MySqlService mySqlService;
 
     @Bean
     ProvisioningAgentService provisioningAgentService(DockerContainerInstanceService dockerContainerInstanceService,
                                                       ExceptionFormatter exceptionFormatter) {
-        return new ProvisioningAgentServiceImpl(dockerContainerInstanceService, exceptionFormatter,
+        return new ProvisioningAgentServiceImpl(mySqlService, dockerContainerInstanceService, exceptionFormatter,
                 provisioningSecondsTimeout);
     }
 

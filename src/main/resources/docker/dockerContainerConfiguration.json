@@ -4,5 +4,4 @@
   "commandList": [],
   "envList": ["MYSQL_ROOT_PASSWORD=my-secret-pw"],
   "containerName": "containerName"
-
 }

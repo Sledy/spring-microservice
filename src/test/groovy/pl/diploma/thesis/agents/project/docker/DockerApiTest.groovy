@@ -1,6 +1,7 @@
 package pl.diploma.thesis.agents.project.docker
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.spotify.docker.client.messages.TopResults
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
@@ -32,6 +33,18 @@ class DockerApiTest extends Specification {
             it.cmd().intersect(dto.commandList)
         }
     }
+
+    def "should return container processes list"(){
+        given:
+        DockerContainerInstanceDto dockerContainerInstanceDto = new DockerContainerInstanceDto()
+        dockerContainerInstanceDto.setContainerId("e9cdfe3c922b")
+        when:
+        def processes = testDockerApi.listContainerProcesses(dockerContainerInstanceDto)
+        then:
+        processes != null
+
+    }
+
 
 
     def "should read from json"(){
