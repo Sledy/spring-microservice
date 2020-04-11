@@ -11,6 +11,7 @@ import pl.diploma.thesis.agents.project.utils.JsonConverter;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -104,6 +105,7 @@ class DockerContainerInstanceServiceImpl implements DockerContainerInstanceServi
                 .mapContainerInfoToDockerContainerInstance(dockerApi.inspectContainer(containerId)));
 
         entity.setLastStatusUpdate(LocalDateTime.now());
+
         return dockerContainerInstanceMapper.mapToDockerContainerInstanceDto(repository.save(entity));
     }
 
@@ -123,10 +125,11 @@ class DockerContainerInstanceServiceImpl implements DockerContainerInstanceServi
     @Override
     public List<String> getContainerProcessesList(DockerContainerInstanceDto dockerContainerInstanceDto) {
         return dockerApi.listContainerProcesses(dockerContainerInstanceDto)
-                        .processes()
-                        .stream()
-                        .map(process -> process.get(process.size() - 1))
-                        .collect(Collectors.toList());
+                        .map(topResults -> topResults.processes().stream()
+                                                     .map(process -> process.get(process.size() - 1))
+                                                     .collect(Collectors.toList()))
+                        .orElseGet(LinkedList::new);
+
     }
 
     @Override

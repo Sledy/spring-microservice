@@ -8,14 +8,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import pl.diploma.thesis.agents.project.agent.events.EventPublisher;
+import pl.diploma.thesis.agents.project.utils.ExceptionFormatter;
 import pl.diploma.thesis.agents.project.utils.JsonConverter;
 
 @Configuration
 @RequiredArgsConstructor
 class DockerConfiguration {
-
-    private final DockerContainerInstanceRepository repository;
-    private final JsonConverter<DockerContainerInstance> jsonConverter;
 
     @Bean
     DockerClient dockerClient() throws DockerCertificateException {
@@ -23,15 +21,17 @@ class DockerConfiguration {
     }
 
     @Bean
-    DockerApi dockerApi(DockerClient dockerClient) {
-        return new DockerApiImpl(dockerClient);
+    DockerApi dockerApi(DockerClient dockerClient, ExceptionFormatter exceptionFormatter) {
+        return new DockerApiImpl(dockerClient, exceptionFormatter);
     }
 
     @Bean
     DockerContainerInstanceService dockerContainerInstanceService(DockerApi dockerApi,
                                                                   DockerContainerInstanceMapper dockerContainerInstanceMapper,
-                                                                  EventPublisher eventPublisher) {
-        return new DockerContainerInstanceServiceImpl(repository, jsonConverter, dockerApi,
+                                                                  EventPublisher eventPublisher,
+                                                                  DockerContainerInstanceRepository dockerContainerInstanceRepository,
+                                                                  JsonConverter<DockerContainerInstance> jsonConverter) {
+        return new DockerContainerInstanceServiceImpl(dockerContainerInstanceRepository, jsonConverter, dockerApi,
                 dockerContainerInstanceMapper, eventPublisher);
     }
 

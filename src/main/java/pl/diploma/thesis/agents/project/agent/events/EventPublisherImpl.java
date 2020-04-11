@@ -17,8 +17,16 @@ class EventPublisherImpl implements EventPublisher {
     }
 
     @Override
-    public void publishMySqlProvisioningEvent(DockerContainerConfigDto dockerContainerConfigDto){
+    public void publishMySqlProvisioningEvent(DockerContainerConfigDto dockerContainerConfigDto) {
         Event.MySqlProvisioning event = Event.getMySqlProvisioningEvent(this, dockerContainerConfigDto);
+        publisher.publishEvent(event);
+    }
+
+    @Override
+    public void publishFailoverEvent(DockerContainerInstanceDto dockerContainerInstanceDto,
+                                     DockerContainerConfigDto dockerContainerConfigDto) {
+        Event.DatabaseFailoverEvent event = Event
+                .getDatabseFailoverEvent(this, dockerContainerConfigDto, dockerContainerInstanceDto);
         publisher.publishEvent(event);
     }
 

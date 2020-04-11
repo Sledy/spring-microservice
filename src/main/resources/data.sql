@@ -1,4 +1,5 @@
-CREATE TABLE IF NOT EXISTS docker_instances (
+DROP TABLE IF EXISTS docker_instances;
+CREATE TABLE docker_instances (
 id INT AUTO_INCREMENT PRIMARY KEY,
 container_name VARCHAR (200),
 container_id VARCHAR(200),

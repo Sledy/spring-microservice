@@ -8,14 +8,17 @@ import lombok.extern.slf4j.Slf4j;
 import pl.diploma.thesis.agents.project.docker.exceptions.ContainerCreationException;
 import pl.diploma.thesis.agents.project.docker.exceptions.DockerInterruptedException;
 import pl.diploma.thesis.agents.project.docker.exceptions.UnexpectedDockerResponseException;
+import pl.diploma.thesis.agents.project.utils.ExceptionFormatter;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Slf4j
 class DockerApiImpl implements DockerApi {
 
     private final DockerClient dockerClient;
+    private final ExceptionFormatter exceptionFormatter;
 
     @Override
     public List<Container> listContainers() {
@@ -113,12 +116,12 @@ class DockerApiImpl implements DockerApi {
     }
 
     @Override
-    public TopResults listContainerProcesses(DockerContainerInstanceDto dockerContainerInstanceDto) {
+    public Optional<TopResults> listContainerProcesses(DockerContainerInstanceDto dockerContainerInstanceDto) {
         try {
-            return dockerClient.topContainer(dockerContainerInstanceDto.getContainerId(), "-aux");
+            return Optional.of(dockerClient.topContainer(dockerContainerInstanceDto.getContainerId(), "-aux"));
         } catch (DockerException e) {
-            String msg = "Error during container processes check";
-            throw new ContainerCreationException(msg, e);
+            log.error("Error during container processes check.");
+            return Optional.empty();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new DockerInterruptedException(e);

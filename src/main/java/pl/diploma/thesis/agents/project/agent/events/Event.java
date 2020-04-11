@@ -13,8 +13,14 @@ public class Event {
         return new ContainerRemoval(source, containerInstanceDto);
     }
 
-    static MySqlProvisioning getMySqlProvisioningEvent(Object source, DockerContainerConfigDto dockerContainerConfigDto){
+    static MySqlProvisioning getMySqlProvisioningEvent(Object source,
+                                                       DockerContainerConfigDto dockerContainerConfigDto) {
         return new MySqlProvisioning(source, dockerContainerConfigDto);
+    }
+
+    static DatabaseFailoverEvent getDatabseFailoverEvent(Object source, DockerContainerConfigDto dockerContainerConfigDto,
+                                 DockerContainerInstanceDto dockerContainerInstanceDto) {
+        return new DatabaseFailoverEvent(source, dockerContainerInstanceDto, dockerContainerConfigDto);
     }
 
     public static class ContainerRemoval extends ApplicationEvent {
@@ -30,18 +36,42 @@ public class Event {
         }
     }
 
-    public static class MySqlProvisioning extends ApplicationEvent{
+    public static class MySqlProvisioning extends ApplicationEvent {
 
-        private transient DockerContainerConfigDto dockerContainerConfigDto;
+        private final transient DockerContainerConfigDto dockerContainerConfigDto;
 
         private MySqlProvisioning(Object source, DockerContainerConfigDto dockerContainerConfigDto) {
             super(source);
             this.dockerContainerConfigDto = dockerContainerConfigDto;
         }
 
-        public DockerContainerConfigDto getMessage(){
+        public DockerContainerConfigDto getMessage() {
             return dockerContainerConfigDto;
         }
     }
+
+    public static class DatabaseFailoverEvent extends ApplicationEvent {
+
+        private final transient DockerContainerConfigDto dockerContainerConfigDto;
+        private final transient DockerContainerInstanceDto dockerContainerInstanceDto;
+
+        private DatabaseFailoverEvent(Object source, DockerContainerInstanceDto dockerContainerInstanceDto,
+                                     DockerContainerConfigDto dockerContainerConfigDto) {
+            super(source);
+            this.dockerContainerConfigDto = dockerContainerConfigDto;
+            this.dockerContainerInstanceDto = dockerContainerInstanceDto;
+        }
+
+        public DockerContainerConfigDto getDockerContainerConfigDto() {
+            return dockerContainerConfigDto;
+        }
+
+        public DockerContainerInstanceDto getDockerContainerInstanceDto() {
+            return dockerContainerInstanceDto;
+        }
+
+
+    }
+
 
 }

@@ -2,6 +2,7 @@ package pl.diploma.thesis.agents.project.docker;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -21,5 +22,6 @@ class DockerContainerInstance implements Serializable {
     private String containerId;
     private String imageName;
     private String status;
+    @LastModifiedDate
     private LocalDateTime lastStatusUpdate;
 }

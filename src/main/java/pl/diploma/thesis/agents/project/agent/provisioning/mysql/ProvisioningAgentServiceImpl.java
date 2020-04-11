@@ -3,6 +3,7 @@ package pl.diploma.thesis.agents.project.agent.provisioning.mysql;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
+import pl.diploma.thesis.agents.project.agent.events.EventPublisher;
 import pl.diploma.thesis.agents.project.docker.ContainerStateEnum;
 import pl.diploma.thesis.agents.project.docker.DockerContainerConfigDto;
 import pl.diploma.thesis.agents.project.docker.DockerContainerInstanceDto;
@@ -18,6 +19,8 @@ class ProvisioningAgentServiceImpl implements ProvisioningAgentService {
     private final DockerContainerInstanceService dockerContainerInstanceService;
     private final ExceptionFormatter exceptionFormatter;
     private final int provisioningSecondsTimeout;
+    private final EventPublisher eventPublisher;
+    private final Object monitorObject = new Object();
 
     @Async
     @Override
@@ -36,8 +39,9 @@ class ProvisioningAgentServiceImpl implements ProvisioningAgentService {
         waitForContainerToBeRunning(dockerContainerInstanceDto, provisioningSecondsTimeout);
         log.info("Container is running. Checking database health");
 
-        if(mySqlService.mySqlDaemonIsRunning(dockerContainerInstanceDto)){
-         //TODO: Start failover
+        if (!mySqlService.mySqlDaemonIsRunning(dockerContainerInstanceDto)) {
+            eventPublisher.publishFailoverEvent(dockerContainerInstanceDto, dockerContainerConfigDto);
+            return;
         }
 
         log.info("Database is ready. Provisioning completed!");
@@ -53,6 +57,7 @@ class ProvisioningAgentServiceImpl implements ProvisioningAgentService {
 
         while (!containerIsRunning(dockerContainerInstanceDto) && maxRetries > retries) {
             try {
+                //noinspection BusyWait
                 Thread.sleep(1000);
                 retries++;
             } catch (InterruptedException e) {

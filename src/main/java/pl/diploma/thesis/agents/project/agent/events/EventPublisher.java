@@ -10,4 +10,7 @@ public interface EventPublisher {
 
     void publishMySqlProvisioningEvent(DockerContainerConfigDto dockerContainerConfigDto);
 
+    void publishFailoverEvent(DockerContainerInstanceDto dockerContainerInstanceDto,
+                              DockerContainerConfigDto dockerContainerConfigDto);
+
 }

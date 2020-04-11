@@ -3,6 +3,7 @@ package pl.diploma.thesis.agents.project.docker;
 import com.spotify.docker.client.messages.*;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DockerApi {
 
@@ -22,6 +23,6 @@ public interface DockerApi {
 
     ContainerCreation createContainer(ContainerConfig containerConfig);
 
-    TopResults listContainerProcesses(DockerContainerInstanceDto dockerContainerInstanceDto);
+    Optional<TopResults> listContainerProcesses(DockerContainerInstanceDto dockerContainerInstanceDto);
 
 }
